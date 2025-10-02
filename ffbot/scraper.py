@@ -150,6 +150,13 @@ def scrape(league, is_IDP: bool = False):
     tqdm.pandas(desc="Scraping weekly forecasts")
     df = df.progress_apply(get_projections, axis=1)
 
+    # Fill NaN values in week columns with 0 (for bye weeks and missing projections)
+    week_columns = ["Week {}".format(i) for i in range(current_week(), 18)]
+    for col in week_columns:
+        if col in df.columns:
+            df[col] = df[col].fillna(0)
+
+
     # Remove players without projections
     df = df[~pd.isna(df["Week 1"])]
 
